@@ -3,4 +3,8 @@ export class AlarmSeverity {
     equals(severity: AlarmSeverity) {
         return severity.value === this.value
     }
+
+    toJSON() {
+        return this.value;
+    }
 }

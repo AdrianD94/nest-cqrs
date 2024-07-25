@@ -1,19 +1,19 @@
 import { Injectable } from "@nestjs/common";
-import { InjectRepository } from "@nestjs/typeorm";
-import { Repository } from "typeorm";
 import { AlarmEntity } from "../entities/alarm.entity";
-import { AlarmRepository } from "src/alarms/application/ports/alarm.repository";
 import { Alarm } from "src/alarms/domain/alarm";
 import { AlarmMapper } from "../mappers/alarm.mapper";
+import { FindAlarmsRepository } from "src/alarms/application/ports/find-alarms.repository";
+import { UpsertMaterializedAlarmRepository } from "src/alarms/application/ports/upsert-materialized-alarm.repository";
+import { AlarmReadModel } from "src/alarms/domain/read-models/alarm.read-model";
+import { CreateAlarmRepository } from "src/alarms/application/ports/create-alarm.repository";
 
 @Injectable()
-export class InMemoryAlarmRepository implements AlarmRepository {
+export class InMemoryAlarmRepository implements CreateAlarmRepository, FindAlarmsRepository, UpsertMaterializedAlarmRepository {
     private readonly alarms = new Map<string, AlarmEntity>();
+    private readonly materializedAlarmViews = new Map<string, AlarmReadModel>();
 
-    async findAll(): Promise<Alarm[]> {
-        const entities = Array.from(this.alarms.values());
-
-        return entities.map((entity) => AlarmMapper.toDomain(entity))
+    async findAll(): Promise<AlarmReadModel[]> {
+        return Array.from(this.materializedAlarmViews.values());
     }
     async save(alarm: Alarm): Promise<Alarm> {
         const persistenceModel = AlarmMapper.toPersistence(alarm);
@@ -21,5 +21,16 @@ export class InMemoryAlarmRepository implements AlarmRepository {
 
         const newEntity = this.alarms.get(persistenceModel.id);
         return AlarmMapper.toDomain(newEntity);
+    }
+
+    async upsert(alarm: Pick<AlarmReadModel, 'id'> & Partial<AlarmReadModel>): Promise<void>{
+        if(this.materializedAlarmViews.has(alarm.id)){
+            this.materializedAlarmViews.set(alarm.id,{
+                ...this.materializedAlarmViews.get(alarm.id),
+                ...alarm
+            })
+            return;
+        }
+        this.materializedAlarmViews.set(alarm.id, alarm as AlarmReadModel)
     }
 }

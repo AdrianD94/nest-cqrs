@@ -3,6 +3,7 @@ import { CreateAlarmCommand } from './application/commands/create-alarm.command'
 import { CommandBus, QueryBus } from '@nestjs/cqrs';
 import { GetAlarmsQuery } from './application/queries/get-alarms.query';
 import { AcknowledgeAlarmCommand } from './application/commands/acknowledge-alarm.command';
+import { FalseAlarmCommand } from './application/commands/false-alarm.command';
 
 @Injectable()
 export class AlarmsService {
@@ -17,5 +18,8 @@ export class AlarmsService {
 
   async acknowledge(alarmId:string){
     return this.commandBus.execute(new AcknowledgeAlarmCommand(alarmId))
+  }
+  async falseAlarm(alarmId:string){
+    return this.commandBus.execute(new FalseAlarmCommand(alarmId))
   }
 }

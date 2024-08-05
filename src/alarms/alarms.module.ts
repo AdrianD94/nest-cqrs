@@ -7,10 +7,12 @@ import { GetAlarmsQueryHandler } from './application/queries/get-alarms.query-ha
 import { AlarmCreatedEventHandler } from './application/event-handlers/alarm-created.event-handler';
 import { AcknowledgeAlarmCommandHandler } from './application/commands/acknowledge-alarm.command-handler';
 import { AcknowledgeAlarmEventEventHandler } from './application/event-handlers/alarm-acknowledge.event-handler';
+import { FalseAlarmCommandHandler } from './application/commands/false-alarm.command-handler';
+import { FalseAlarmEventHandler } from './application/event-handlers/false-alarm.event-handler';
 
 @Module({
   controllers: [AlarmsController],
-  providers: [AlarmsService, AlarmFactory, CreateAlarmCommandHandler, GetAlarmsQueryHandler, AlarmCreatedEventHandler, AcknowledgeAlarmCommandHandler, AcknowledgeAlarmEventEventHandler],
+  providers: [AlarmsService, AlarmFactory, CreateAlarmCommandHandler, GetAlarmsQueryHandler, AlarmCreatedEventHandler, AcknowledgeAlarmCommandHandler, AcknowledgeAlarmEventEventHandler, FalseAlarmCommandHandler, FalseAlarmEventHandler],
 })
 export class AlarmsModule {
   static withInfrastructure(infrastructureModule: Type | DynamicModule) {

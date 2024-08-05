@@ -21,4 +21,8 @@ export class AlarmsController {
   acknowledge(@Param('id') id: string) {
     return this.alarmsService.acknowledge(id);
   }
+  @Patch(':id/false-alarm')
+  falseAlarm(@Param('id') id: string) {
+    return this.alarmsService.falseAlarm(id);
+  }
 }

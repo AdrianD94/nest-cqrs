@@ -4,6 +4,7 @@ import { AlarmSeverity } from "./value-objects/alarm-severity";
 import { AcknowledgeAlarmEvent } from "./events/acknowledge-alarm.event";
 import { SerializedEventPayload } from "src/shared/domain/interfaces/serializable-event";
 import { AlarmCreatedEvent } from "./events/alarm-created.event";
+import { FalseAlarmEvent } from "./events/false-alarm.event";
 
 export class Alarm extends VersionedAggregateRoot {
     public name: string;
@@ -15,6 +16,10 @@ export class Alarm extends VersionedAggregateRoot {
 
     public acknowledge() {
         this.apply(new AcknowledgeAlarmEvent(this.id))
+    }
+
+    public falseAlarm() {
+        this.apply(new FalseAlarmEvent(this.id))
     }
 
     public addAlarmItem(item: AlarmItem) {
@@ -35,5 +40,9 @@ export class Alarm extends VersionedAggregateRoot {
 
         }
         this.isAcknowledged = true
+    }
+
+    [`on${FalseAlarmEvent.name}`](event: SerializedEventPayload<FalseAlarmEvent>) {
+        this.isAcknowledged = false;
     }
 }

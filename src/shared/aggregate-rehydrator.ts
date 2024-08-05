@@ -11,6 +11,7 @@ export class AggregateRehydrator {
 
     async rehydrate<T extends VersionedAggregateRoot>(aggregateId: string, AggregateCls: Type<T>): Promise<T> {
         const events = await this.eventStore.getEventsByStreamId(aggregateId);
+        events.map((e)=> console.log(e.data))
         const AggregateClsWithDispatcher =
             this.eventPublisher.mergeClassContext(AggregateCls);
         const aggregate = new AggregateClsWithDispatcher(aggregateId)
